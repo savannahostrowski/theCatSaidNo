@@ -8,6 +8,11 @@ Building applications that use multiple cloud services, connecting them all toge
     - Sign up for [FREE](https://azure.microsoft.com/free/?WT.mc_id=A261C142F). You also need [contributor role assigned](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal) to your Azure subscription.
 2. Install [azd](https://aka.ms/azd-install)
 
+### Resources
+
+- Documentation: <https://aka.ms/azure-dev/devhub>
+- Source Repo: <https://github.com/azure/azure-dev>
+
 ## Quickstart
 
 Create a new directory.
