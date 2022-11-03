@@ -1,9 +1,25 @@
-This is a azdev-ify Useful Website written in Flask for demo purposes and used in this blog post: https://techcommunity.microsoft.com/t5/apps-on-azure-blog/part-1-azdev-ify-what/ba-p/3644493.
+# GitHub to Cloud in Minutes with the Azure Developer CLI
 
-The [Azure Developer CLI (azd)](https://aka.ms/azd) makes it quick and easy to get up and running on Azure by following a few conventions.  
+Building applications that use multiple cloud services, connecting them all together in a secure way, and setting up a CI/CI pipeline can be a confusing and daunting task. Not to mention a time consuming one with many options. Learn how you can use the Microsoft Azure Developer CLI and the associated code templates to quickly get these types of applications up and running in cloud in minutes; build upon them and templatize your own ideas to do the same.
 
-Make sure you have an Azure account with an active subscription. [Create one for free](https://azure.microsoft.com/free/?WT.mc_id=A261C142F). You also need contributor role assigned to your Azure subscription. 
+## Prerequisites
 
-To deploy this useful website:
-1. Install [azd](https://aka.ms/azd-install)
-2. azd up -t https://github.com/puicchan/thecatsaidno
+1. Azure Account
+    - Sign up for [FREE](https://azure.microsoft.com/free/?WT.mc_id=A261C142F). You also need [contributor role assigned](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal) to your Azure subscription.
+2. Install [azd](https://aka.ms/azd-install)
+
+## Quickstart
+
+Create a new directory.
+
+`mkdir gh-universe`.
+
+Next, change directories,
+
+`cd gh-universe` and run the following command:
+
+ ```bash
+ azd up -t spboyer/thecatsaidno
+ ```
+
+ The command clones the template, creates the infrastructure and publishes the application code to Azure.
