@@ -12,6 +12,7 @@ Building applications that use multiple cloud services, connecting them all toge
 
 - Documentation: <https://aka.ms/azure-dev/devhub>
 - Source Repo: <https://github.com/azure/azure-dev>
+- Templates: Find approved azd compatible templates and contribute your own. <https://aka.ms/awesome-azd>
 
 ## Quickstart
 
