@@ -7,6 +7,9 @@ Building applications that use multiple cloud services, connecting them all toge
 1. Azure Account
     - Sign up for [FREE](https://azure.microsoft.com/free/?WT.mc_id=A261C142F). You also need [contributor role assigned](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal) to your Azure subscription.
 2. Install [azd](https://aka.ms/azd-install)
+3. GitHub CLI -
+    `brew install gh` or `choco install gh` or `winget install github.cli` : More options <https://cli.github.com/manual/installation>
+4. Azure CLI - <https://learn.microsoft.com/cli/azure/install-azure-cli>
 
 ### Resources
 
