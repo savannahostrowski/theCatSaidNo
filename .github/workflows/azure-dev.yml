@@ -23,6 +23,11 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # temp fix for null string assignment
+      - name: Bicep CLI Fix
+        run: |
+          az bicep install --version v0.11.1
+
       - name: Azure Dev Provision
         run: azd provision --no-prompt
         env:
