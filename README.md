@@ -69,3 +69,16 @@ azd deploy
  ```
 
  The output provides the url to browse to for the published application.
+
+## Configure GitHub Actions
+
+```bash
+az pipeline config
+```
+
+Included in the template is a GitHub Action workflow file. To configure and enable the action, `azd` provides the `pipeline configure` command/action which performs the following:
+
+- Creates and configures the Service Principal on the Azure subscription
+- If there is not a git repository configured, provides the needed mechanics to create/configure your repository as well as commit the code.
+- Create a secure connection between Azure and your repository using GitHub secrets.
+- Upon checking in the workflow file, runs the action.
