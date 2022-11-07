@@ -76,7 +76,7 @@ azd deploy
 ## Configure GitHub Actions
 
 ```bash
-az pipeline config
+azd pipeline config
 ```
 
 Included in the template is a GitHub Action workflow file. To configure and enable the action, `azd` provides the `pipeline configure` command/action which performs the following:
