@@ -1,4 +1,4 @@
-# GitHub to Cloud in Minutes with the Azure Developer CLI
+# GitHub to Cloud in Minutes with the Azure Developer CLI (`azd`)
 
 Building applications that use multiple cloud services, connecting them all together in a secure way, and setting up a CI/CI pipeline can be a confusing and daunting task. Not to mention a time consuming one with many options. Learn how you can use the Microsoft Azure Developer CLI and the associated code templates to quickly get these types of applications up and running in cloud in minutes; build upon them and templatize your own ideas to do the same.
 
