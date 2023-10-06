@@ -2,67 +2,106 @@ targetScope = 'subscription'
 
 @minLength(1)
 @maxLength(64)
-@description('Name of the the environment which is used to generate a short unique hash used in all resources.')
+@description('Name of the environment that can be used as part of naming resource convention')
 param environmentName string
 
 @minLength(1)
 @description('Primary location for all resources')
 param location string
 
-// Optional parameters to override the default azd resource naming conventions. Update the main.parameters.json file to provide values. e.g.,:
-// "resourceGroupName": {
-//      "value": "myGroupName"
-// }
-param appServicePlanName string = ''
-param resourceGroupName string = ''
-param webServiceName string = ''
-// serviceName is used as value for the tag (azd-service-name) azd uses to identify
-param serviceName string = 'web'
+param theCatSaidNoExists bool
 
 @description('Id of the user or app to assign application roles')
-param principalId string = ''
+param principalId string
+
+// Tags that should be applied to all resources.
+// 
+// Note that 'azd-service-name' tags should be applied separately to service host resources.
+// Example usage:
+//   tags: union(tags, { 'azd-service-name': <service name in azure.yaml> })
+var tags = {
+  'azd-env-name': environmentName
+}
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
-var tags = { 'azd-env-name': environmentName }
 
-// Organize resources in a resource group
-resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: !empty(resourceGroupName) ? resourceGroupName : '${abbrs.resourcesResourceGroups}${environmentName}'
+resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+  name: 'rg-${environmentName}'
   location: location
   tags: tags
 }
 
-// The application frontend
-module web './core/host/appservice.bicep' = {
-  name: serviceName
-  scope: rg
+module monitoring './shared/monitoring.bicep' = {
+  name: 'monitoring'
   params: {
-    name: !empty(webServiceName) ? webServiceName : '${abbrs.webSitesAppService}web-${resourceToken}'
-    location: location
-    tags: union(tags, { 'azd-service-name': serviceName })
-    appServicePlanId: appServicePlan.outputs.id
-    runtimeName: 'python'
-    runtimeVersion: '3.8'
-    scmDoBuildDuringDeployment: true
-  }
-}
-
-// Create an App Service Plan to group applications under the same payment plan and SKU
-module appServicePlan './core/host/appserviceplan.bicep' = {
-  name: 'appserviceplan'
-  scope: rg
-  params: {
-    name: !empty(appServicePlanName) ? appServicePlanName : '${abbrs.webServerFarms}${resourceToken}'
     location: location
     tags: tags
-    sku: {
-      name: 'B1'
-    }
+    logAnalyticsName: '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
+    applicationInsightsName: '${abbrs.insightsComponents}${resourceToken}'
   }
+  scope: rg
 }
 
-// App outputs
-output AZURE_LOCATION string = location
-output AZURE_TENANT_ID string = tenant().tenantId
-output REACT_APP_WEB_BASE_URL string = web.outputs.uri
+module dashboard './shared/dashboard-web.bicep' = {
+  name: 'dashboard'
+  params: {
+    name: '${abbrs.portalDashboards}${resourceToken}'
+    applicationInsightsName: monitoring.outputs.applicationInsightsName
+    location: location
+    tags: tags
+  }
+  scope: rg
+}
+
+module registry './shared/registry.bicep' = {
+  name: 'registry'
+  params: {
+    location: location
+    tags: tags
+    name: '${abbrs.containerRegistryRegistries}${resourceToken}'
+  }
+  scope: rg
+}
+
+module keyVault './shared/keyvault.bicep' = {
+  name: 'keyvault'
+  params: {
+    location: location
+    tags: tags
+    name: '${abbrs.keyVaultVaults}${resourceToken}'
+    principalId: principalId
+  }
+  scope: rg
+}
+
+module appsEnv './shared/apps-env.bicep' = {
+  name: 'apps-env'
+  params: {
+    name: '${abbrs.appManagedEnvironments}${resourceToken}'
+    location: location
+    tags: tags
+    applicationInsightsName: monitoring.outputs.applicationInsightsName
+    logAnalyticsWorkspaceName: monitoring.outputs.logAnalyticsWorkspaceName
+  }
+  scope: rg
+}
+
+module theCatSaidNo './app/theCatSaidNo.bicep' = {
+  name: 'theCatSaidNo'
+  params: {
+    name: '${abbrs.appContainerApps}thecatsaidno-${resourceToken}'
+    location: location
+    tags: tags
+    identityName: '${abbrs.managedIdentityUserAssignedIdentities}thecatsaidno-${resourceToken}'
+    applicationInsightsName: monitoring.outputs.applicationInsightsName
+    containerAppsEnvironmentName: appsEnv.outputs.name
+    containerRegistryName: registry.outputs.name
+    exists: theCatSaidNoExists
+  }
+  scope: rg
+}
+
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.loginServer
+output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
+output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.endpoint
